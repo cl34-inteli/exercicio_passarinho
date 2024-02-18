@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<!--Define a língua da página como inglês-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> <!--Define a codificação dos caracteres-->
+
+    <!-- name define o nome do aplicativo em execução na página da web e o content contém o valor de name-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--Coloca o phaser dentro do arquivo html, o que possibilita escrever o código aqui dentro-->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    
+    <title>Exercício do Pássaro</title> <!--Define o nome que vai aparecer na aba da página-->
+   
+    <!--Define a formatação e centralização da página-->
+   <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;  }
+    </style>
+</head>
+<body>
+
+<script>
+
+    // vamos escrever o código (JS + Phaser) aqui dentro!
+
+var config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+/*dá as configurações e opções para configurar e inicializar 
+o jogo como dimensões da tela, física do jogo, cenários, carregamento de imagens, áudio, etc.*/
+var game = new Phaser.Game(config);
+
+var passarinho;
+
+//carrega as coisas dentro da página
+function preload() {
+    this.load.image('bg', 'assets/bg_space.png');
+    /*criação do pássaro como uma animação porque o objeto
+     sprite suporta animações, colisões, eventos e interações*/
+    this.load.spritesheet('bird', 'assets/bird-purple.png', {frameWidth: 75, frameHeight: 75});
+    this.load.image('maca', 'assets/maca.png'); //carregamento da imagem da maçã
+}
+
+//coloca as imagens dentro da página
+function create() {
+    this.add.image(400, 300, 'bg').setScale(1.2);
+    passarinho = this.add.sprite(100,300, 'bird').setScale(1.3);
+    maca = this.add.image(400, 0, 'maca').setScale(0.17); //criação das maçãs
+    maca2 = this.add.image(200, 0, 'maca').setScale(0.17);
+    maca3 = this.add.image(600, 0, 'maca').setScale(0.17);
+
+    var texto = this.add.text(200, 50, "O passarinho tenta desviar das maçãs", { fontFamily: 'Arial', fontSize: '20px', fill: '#ffffff' });
+
+    //esse comando é usado para configurar uma animação
+
+    this.anims.create({
+        key: 'fly', //key representa o nome da animação
+        frames: this.anims.generateFrameNumbers('bird', {start: 0, end: 7}), //indica os frames da animação
+        frameRate: 10, //indica a quantidade de frames no tempo de 1 segundo
+        repeat: -1 //indica as repetições de um frame: -1 significa repetição contínua, 0 indica ausência de repetições e um número positivo indica a quantidade de repetições
+    });
+
+    passarinho.anims.play('fly', true); //inicia animação configurada
+
+}
+
+//trabalha como o while atualizando as informções dentro da página
+function update() { 
+    //Faz o passarinho ir
+    if (passarinho.x === 100){ 
+        passarinho.setFlip(false, false)
+        passarinho.ida = true;
+    }
+
+    //Faz o passarinho continuar a ida
+    if (passarinho.x <700 && passarinho.ida === true){ 
+        console.log("O que acontece? Ele vai pra direita.");
+        passarinho.x +=5;
+    }
+
+    //O código percebe o fim da ida e inicia a volta
+    if (passarinho.x === 700) {
+        passarinho.setFlip(true, false);
+        passarinho.ida= false;
+    }
+
+    //Pssobilita o fim da volta até o ponto inicial
+    if (passarinho.x > 100 && passarinho.ida === false) {
+        console.log("E o que acontece agora? Ele vai pra esquerda.")
+        passarinho.x -= 5;
+    }
+
+    /*
+    As próximas linhas de if fazem o movimento do passarinho na vertical
+    isso dentro dos mesmos conceitos da horizontal, mas utilizando o eixo y
+    */
+    if (passarinho.y <500 && passarinho.ida === true){
+        console.log("O que acontece? Ele vai pra baixo.");
+        passarinho.y +=5;
+    }
+
+
+    if (passarinho.y > 100 && passarinho.ida === false) {
+        console.log("E o que acontece agora? Ele vai pra cima.")
+        passarinho.y -= 5;
+    }
+
+    /*As próximas linhas fazem as maçãs spawnarem em velocidades diferentes
+    se elas não estiverem na posição 700, elas retornam para a posição 0
+    isso usando for e if*/
+    for(var i = 0; i < 3; i++) {
+        maca.y += i*2
+    }
+    if(maca.y > 700){
+        maca.y = 0
+    }
+
+    for(var i = 0; i < 3; i++) {
+        maca2.y += i*3
+    }
+    if(maca2.y > 700){
+        maca2.y = 0
+    }
+
+    for(var i = 0; i < 3; i++) {
+        maca3.y += i
+    }
+    if(maca3.y > 700){
+        maca3.y = 0
+    }
+
+}
+
+</script>
+
+</body>
+</html>
